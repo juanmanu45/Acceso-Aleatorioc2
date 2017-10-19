@@ -6,7 +6,7 @@
 package DAO;
 
 import Conexion.DbUtil;
-import VO.Esquema;
+import VO.Contexto;
 import VO.Unidad;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,23 +19,22 @@ import java.util.ArrayList;
  *
  * @author LabingXEON
  */
-public class ServiciosUnidad {
-    
-     private Connection connection;
+public class ServiciosContexto {
 
-    public ServiciosUnidad() {
+    private Connection connection;
+
+    public ServiciosContexto() {
         connection = DbUtil.getConnection();
     }
 
-    public void agregarUnidad(Unidad u) {
+    public void agregarContexto(Contexto c) {
         try {
             PreparedStatement preparedStatement = connection
-                    .prepareStatement("insert into UnidadAbs(id_unidad,id_contexto,id_Tabla) values (?, ?, ?)");
+                    .prepareStatement("insert ContextoDeNavegacion(id_constexto,link,id_Modelo) values (?, ?, ?)");
             // Parameters start with 1
-            preparedStatement.setInt(1, u.getId_unidad());
-            preparedStatement.setInt(2, u.getId_contexto());
-            preparedStatement.setInt(2, u.getId_tabla());
-           
+            preparedStatement.setInt(1, c.getId_contexto());
+            preparedStatement.setInt(1, c.getLink());
+            preparedStatement.setInt(1, c.getId_modelo());
 
             preparedStatement.executeUpdate();
 
@@ -44,30 +43,28 @@ public class ServiciosUnidad {
         }
     }
 
-    public ArrayList<Unidad> listarU() {
-        ArrayList<Unidad> unidades = new ArrayList<Unidad>();
+    public ArrayList<Contexto> listarCon() {
+        ArrayList<Contexto> contextos = new ArrayList<Contexto>();
         try {
             System.out.println("LLegue hasta aca");
             Statement statement = connection.createStatement();
 
-            ResultSet rs = statement.executeQuery("select * from Esquemas");
+            ResultSet rs = statement.executeQuery("select * from ContextoDeNavegacion");
             while (rs.next()) {
-                Unidad u=new Unidad();
+                Contexto con=new Contexto();
+                con.setId_contexto(rs.getInt("id_contexto"));
+                con.setId_modelo(rs.getInt("id_Modelo"));
+                con.setLink(rs.getInt("link"));
 
-                u.setId_contexto(rs.getInt("id_contexto"));
-                u.setId_unidad(rs.getInt("id_unidad"));
-                u.setId_tabla(rs.getInt("id_Tabla"));
                 
 
-                unidades.add(u);
+                contextos.add(con);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return unidades;
+        return contextos;
     }
 
-    
-    
 }
